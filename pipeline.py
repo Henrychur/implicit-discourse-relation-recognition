@@ -26,9 +26,14 @@ def train():
         y_pred = np.array([])
         for batch in train_dataloader:
             optimizer.zero_grad()
-            labels = batch[6].to(config.device)
-            arg1 = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
-            arg2 = (batch[3].to(config.device), batch[4].to(config.device), batch[5].to(config.device))
+            if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+                labels = batch[6].to(config.device)
+                arg1 = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
+                arg2 = (batch[3].to(config.device), batch[4].to(config.device), batch[5].to(config.device))
+            elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
+                labels = batch[4].to(config.device)
+                arg1 = (batch[0].to(config.device), batch[1].to(config.device))
+                arg2 = (batch[2].to(config.device), batch[3].to(config.device))
             outputs = model(arg1, arg2)
             loss = criterion(outputs, labels)
             loss.backward()
@@ -45,9 +50,14 @@ def train():
         y_pred = np.array([])
         with torch.no_grad():
             for batch in val_dataloader:
-                labels = batch[6].to(config.device)
-                arg1 = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
-                arg2 = (batch[3].to(config.device), batch[4].to(config.device), batch[5].to(config.device))
+                if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+                    labels = batch[6].to(config.device)
+                    arg1 = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
+                    arg2 = (batch[3].to(config.device), batch[4].to(config.device), batch[5].to(config.device))
+                elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
+                    labels = batch[4].to(config.device)
+                    arg1 = (batch[0].to(config.device), batch[1].to(config.device))
+                    arg2 = (batch[2].to(config.device), batch[3].to(config.device))
                 outputs = model(arg1, arg2)
                 loss = criterion(outputs, labels)
                 val_loss += loss.item()
@@ -55,7 +65,7 @@ def train():
                 y_true = np.append(y_true, labels.cpu().numpy())
                 y_pred = np.append(y_pred, torch.argmax(outputs, dim=-1).cpu().numpy())
         print("epoch: {}, val loss: {}, val acc: {}, val f1: {}".format(epoch, val_loss/len(val_dataloader), accuracy_score(y_true, y_pred), f1_score(y_true, y_pred, average="macro")))                
-    torch.save(model.state_dict(), "model.pt")
+    torch.save(model.state_dict(), config.backbone + "_model.pt")
 
 if __name__ == "__main__":
     train()

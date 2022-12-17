@@ -5,4 +5,4 @@ class config:
     device = torch.device("cuda")
     epoch = 100
     lr = 2e-5 # 2e-5 5e-6 2e-6
-    scale = "base" # base or large
+    backbone = "roberta-base" # bert-base-uncased, bert-large-uncased, roberta-base, roberta-large
