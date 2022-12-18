@@ -22,20 +22,16 @@ class DiscourseDataset(Dataset):
     def __getitem__(self, index):
         if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
             arg1, arg2, label = self.data[index]
-            arg1_input_ids = arg1["input_ids"][0]
-            arg1_token_type_ids = arg1["token_type_ids"][0]
-            arg1_attention_mask = arg1["attention_mask"][0]
-            arg2_input_ids = arg2["input_ids"][0]
-            arg2_token_type_ids = arg2["token_type_ids"][0]
-            arg2_attention_mask = arg2["attention_mask"][0]
-            return arg1_input_ids, arg1_token_type_ids, arg1_attention_mask, arg2_input_ids, arg2_token_type_ids, arg2_attention_mask, label
+            arg_input_ids = torch.cat((arg1["input_ids"][0], arg2["input_ids"][0]), dim=0)
+            arg_attention_mask = torch.cat((arg1["attention_mask"][0], arg2["attention_mask"][0]), dim=0)
+            arg_token_type_ids = torch.cat((arg1["token_type_ids"][0], arg2["token_type_ids"][0]), dim=0)
+            return arg_input_ids, arg_token_type_ids, arg_attention_mask, label
+
         elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
             arg1, arg2, label = self.data[index]
-            arg1_input_ids = arg1["input_ids"][0]
-            arg1_attention_mask = arg1["attention_mask"][0]
-            arg2_input_ids = arg2["input_ids"][0]
-            arg2_attention_mask = arg2["attention_mask"][0]
-            return arg1_input_ids, arg1_attention_mask, arg2_input_ids, arg2_attention_mask, label
+            arg_input_ids = torch.cat((arg1["input_ids"][0], arg2["input_ids"][0]), dim=0)
+            arg_attention_mask = torch.cat((arg1["attention_mask"][0], arg2["attention_mask"][0]), dim=0)
+            return arg_input_ids, arg_attention_mask, label
 
 
     def load_data(self):
@@ -49,5 +45,24 @@ class DiscourseDataset(Dataset):
                 data.append((arg1, arg2, label))
         return data
 
+def dataAnalysis():
+    import matplotlib.pyplot as plt
+    mode = "test"
+    tokenizer = AutoTokenizer.from_pretrained(config.backbone)
+    length_ls = []
+    with open(f"./dataset/implicit_{mode}.json","r") as f:
+        jsonFile = json.load(f)
+        for item in jsonFile:
+            arg1 = tokenizer(item["arg1"])
+            arg2 = tokenizer(item["arg2"])
+            length_ls.append(len(arg1["input_ids"]))
+            length_ls.append(len(arg2["input_ids"]))
+    plt.hist(length_ls, bins=100)
+    plt.savefig(f"./dataset/{mode}_length.png")
+    print("max length:", max(length_ls))
+    print("min length:", min(length_ls))
+    print("mean length:", sum(length_ls)/len(length_ls))
+
+
 if __name__ == "__main__":
-    dataset = DiscourseDataset(mode="train")
+    dataAnalysis()

@@ -27,14 +27,12 @@ def train():
         for batch in train_dataloader:
             optimizer.zero_grad()
             if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
-                labels = batch[6].to(config.device)
-                arg1 = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
-                arg2 = (batch[3].to(config.device), batch[4].to(config.device), batch[5].to(config.device))
+                labels = batch[3].to(config.device)
+                arg = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
             elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
-                labels = batch[4].to(config.device)
-                arg1 = (batch[0].to(config.device), batch[1].to(config.device))
-                arg2 = (batch[2].to(config.device), batch[3].to(config.device))
-            outputs = model(arg1, arg2)
+                labels = batch[2].to(config.device)
+                arg = (batch[0].to(config.device), batch[1].to(config.device))
+            outputs = model(arg)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -51,14 +49,12 @@ def train():
         with torch.no_grad():
             for batch in val_dataloader:
                 if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
-                    labels = batch[6].to(config.device)
-                    arg1 = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
-                    arg2 = (batch[3].to(config.device), batch[4].to(config.device), batch[5].to(config.device))
+                    labels = batch[3].to(config.device)
+                    arg = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
                 elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
-                    labels = batch[4].to(config.device)
-                    arg1 = (batch[0].to(config.device), batch[1].to(config.device))
-                    arg2 = (batch[2].to(config.device), batch[3].to(config.device))
-                outputs = model(arg1, arg2)
+                    labels = batch[2].to(config.device)
+                    arg = (batch[0].to(config.device), batch[1].to(config.device))
+                outputs = model(arg)
                 loss = criterion(outputs, labels)
                 val_loss += loss.item()
 
