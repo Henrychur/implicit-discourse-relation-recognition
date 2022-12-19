@@ -1,6 +1,6 @@
 import torch
 class config:
-    max_length = 128
+    max_length = 64
     batch_size = 32
     device = torch.device("cuda")
     epoch = 20
