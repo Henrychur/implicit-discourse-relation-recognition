@@ -8,13 +8,13 @@ class DiscourseDataset(Dataset):
     '''
         隐式篇章关系的数据集
     '''
-    def __init__(self,mode="train", max_length=30):
+    def __init__(self,mode="train", max_length=30, muti_label=False):
         assert mode in ["train","dev","test"], "mode must be train, dev or test"
         self.mode = mode
         self.data_path = f"./dataset/implicit_{mode}.json"
         self.max_length = max_length
         self.tokenizer = AutoTokenizer.from_pretrained(config.backbone)
-        self.data = self.load_data()
+        self.data = self.load_data(muti_label=muti_label)
 
     def __len__(self):
         return len(self.data)
@@ -34,14 +34,17 @@ class DiscourseDataset(Dataset):
             return arg_input_ids, arg_attention_mask, label
 
 
-    def load_data(self):
+    def load_data(self, muti_label=False):
         data = []
         with open(self.data_path,"r") as f:
             jsonFile = json.load(f)
             for item in jsonFile:
                 arg1 = self.tokenizer(item["arg1"], padding="max_length", truncation=True, max_length=self.max_length, return_tensors="pt")
                 arg2 = self.tokenizer(item["arg2"], padding="max_length", truncation=True, max_length=self.max_length, return_tensors="pt")
-                label = int(item["label"][0])
+                if muti_label:
+                    label = [int(i) for i in item["label"]]
+                else:
+                    label = int(item["label"][0])
                 data.append((arg1, arg2, label))
         return data
 
