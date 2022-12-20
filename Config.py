@@ -6,3 +6,4 @@ class config:
     epoch = 20
     lr = 2e-5 # 2e-5 5e-6 2e-6
     backbone = "roberta-base" # bert-base-uncased, bert-large-uncased, roberta-base, roberta-large
+    modelingMethod = "classification" # classification, prompt
