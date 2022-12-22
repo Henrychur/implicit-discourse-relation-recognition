@@ -7,7 +7,7 @@ from Model import DiscourseBert
 from utils import test
 
 def train():
-    train_dataset = DiscourseDataset(mode="train", max_length=config.max_length)
+    train_dataset = DiscourseDataset(mode="train", max_length=config.max_length, use_explict=True)
     val_dataset = DiscourseDataset(mode="dev", max_length=config.max_length)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
