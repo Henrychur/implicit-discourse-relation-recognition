@@ -5,9 +5,11 @@ from Config import config
 from Dataset import DiscourseDataset
 from Model import DiscourseBert
 from utils import test
+import warnings
+warnings.simplefilter("ignore")  #忽略告警
 
 def train():
-    train_dataset = DiscourseDataset(mode="train", max_length=config.max_length, use_explict=True)
+    train_dataset = DiscourseDataset(mode="train", max_length=config.max_length, use_explict=False)
     val_dataset = DiscourseDataset(mode="dev", max_length=config.max_length)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
@@ -28,7 +30,8 @@ def train():
         y_pred = np.array([])
         for batch in train_dataloader:
             optimizer.zero_grad()
-            if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+            if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased" \
+                or config.backbone == "microsoft/deberta-v3-base" or config.backbone == "microsoft/deberta-v3-large":
                 labels = batch[3].to(config.device)
                 arg = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
             elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
@@ -50,10 +53,11 @@ def train():
         y_pred = np.array([])
         with torch.no_grad():
             for batch in val_dataloader:
-                if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+                if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased" \
+                    or config.backbone == "microsoft/deberta-v3-base" or config.backbone == "microsoft/deberta-v3-large":
                     labels = batch[3].to(config.device)
                     arg = (batch[0].to(config.device), batch[1].to(config.device), batch[2].to(config.device))
-                elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
+                elif config.backbone == "roberta-base" or config.backbone == "roberta-large" :
                     labels = batch[2].to(config.device)
                     arg = (batch[0].to(config.device), batch[1].to(config.device))
                 outputs = model(arg)
@@ -64,7 +68,7 @@ def train():
                 y_pred = np.append(y_pred, torch.argmax(outputs, dim=-1).cpu().numpy())
         print("epoch: {}, val loss: {}, val acc: {}, val f1: {}".format(epoch, val_loss/len(val_dataloader), accuracy_score(y_true, y_pred), f1_score(y_true, y_pred, average="macro")))                
         test_f1_log.append(test(model))
-    torch.save(model.state_dict(), config.backbone + "_model.pt")
+    # torch.save(model.state_dict(), config.backbone + "_model.pt")
 
 if __name__ == "__main__":
     train()

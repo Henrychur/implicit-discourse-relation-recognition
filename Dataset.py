@@ -18,13 +18,13 @@ class DiscourseDataset(Dataset):
         self.max_length = max_length
         self.tokenizer = AutoTokenizer.from_pretrained(config.backbone)
         self.data = self.load_data(muti_label=muti_label)
-        print(f"{mode} dataset size:", len(self.data))
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, index):
-        if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+        if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased"\
+            or config.backbone == "microsoft/deberta-v3-base" or config.backbone == "microsoft/deberta-v3-large":
             arg1, arg2, label = self.data[index]
             arg_input_ids = torch.cat((arg1["input_ids"][0], arg2["input_ids"][0]), dim=0)
             arg_attention_mask = torch.cat((arg1["attention_mask"][0], arg2["attention_mask"][0]), dim=0)
@@ -80,4 +80,5 @@ def dataAnalysis():
 
 
 if __name__ == "__main__":
-    dataAnalysis()
+    dataset = DiscourseDataset()
+    

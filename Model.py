@@ -11,9 +11,9 @@ class DiscourseBert(nn.Module):
         # ------------------------ # 
         # 选择骨干网络,决定输出维度
         # ------------------------ # 
-        if config.backbone == "bert-base-uncased" or config.backbone == "roberta-base":
+        if config.backbone == "bert-base-uncased" or config.backbone == "roberta-base" or config.backbone == "microsoft/deberta-v3-base":
             output_dim = 768
-        elif config.backbone == "bert-large-uncased" or config.backbone == "roberta-large":
+        elif config.backbone == "bert-large-uncased" or config.backbone == "roberta-large" or config.backbone == "microsoft/deberta-v3-large":
             output_dim = 1024
         
         # ------------------------ # 
@@ -39,7 +39,8 @@ class DiscourseBert(nn.Module):
         # ------------------------ #
         # 输入骨干网络进行特征提取
         # ------------------------ #
-        if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+        if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased" \
+            or config.backbone == "microsoft/deberta-v3-base" or config.backbone == "microsoft/deberta-v3-large":
             res = self.backbone(input_ids=arg[0], token_type_ids=arg[1], attention_mask=arg[2])
         elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
             res = self.backbone(input_ids=arg[0], attention_mask=arg[1])

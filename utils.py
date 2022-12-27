@@ -18,7 +18,8 @@ def test(model):
     y_pred = np.array([])
     with torch.no_grad():
         for data in test_dataset:
-            if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased":
+            if config.backbone == "bert-base-uncased" or config.backbone == "bert-large-uncased" \
+                or config.backbone == "microsoft/deberta-v3-base"  or config.backbone == "microsoft/deberta-v3-large":
                 labels = data[3]
                 arg = (data[0].unsqueeze(dim=0).to(config.device), data[1].unsqueeze(dim=0).to(config.device), data[2].unsqueeze(dim=0).to(config.device))
             elif config.backbone == "roberta-base" or config.backbone == "roberta-large":
