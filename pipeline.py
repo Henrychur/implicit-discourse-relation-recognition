@@ -9,7 +9,7 @@ import warnings
 warnings.simplefilter("ignore")  #忽略告警
 
 def train():
-    train_dataset = DiscourseDataset(mode="train", max_length=config.max_length, use_explict=False)
+    train_dataset = DiscourseDataset(mode="train", max_length=config.max_length, use_explict=config.use_explict)
     val_dataset = DiscourseDataset(mode="dev", max_length=config.max_length)
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)

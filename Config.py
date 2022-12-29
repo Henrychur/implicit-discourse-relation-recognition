@@ -7,3 +7,4 @@ class config:
     lr = 1e-5 # 2e-5 5e-6 2e-6
     backbone = "roberta-base" # bert-base-uncased, bert-large-uncased, roberta-base, roberta-large microsoft/deberta-v3-base
     modelingMethod = "interaction" # classification, prompt, interaction, prompt_93
+    use_explict = False

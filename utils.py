@@ -46,7 +46,8 @@ def getConnLabelMapping():
     # 1. 加载数据集，获取映射关系
     # -------------------------- # 
     conn_label_mapping = {}
-    for filename in ["implicit_train", "explicit"]:
+    file_list = ["implicit_train", "explicit"] if config.use_explict else ["implicit_train"]
+    for filename in file_list:
         with open(f"dataset/{filename}.json", "r", encoding="utf-8") as f:
             jsonf = json.load(f)
             for item in jsonf:
