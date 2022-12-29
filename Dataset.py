@@ -80,5 +80,5 @@ def dataAnalysis():
 
 
 if __name__ == "__main__":
-    dataset = DiscourseDataset()
+    dataAnalysis()
     
