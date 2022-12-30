@@ -5,7 +5,7 @@ if __name__ == "__main__":
     train_acc, train_f1 = [], []
     val_acc, val_f1 = [], []
     test_acc, test_f1 = [], []
-    log_name = "deberta_v2.out"
+    log_name = "roberta_large_v2.out"
     with open(log_name) as fp:
         for line in fp:
             if "train loss" in line:

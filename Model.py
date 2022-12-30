@@ -364,7 +364,7 @@ class CnnHighway(nn.Module):
 
 
 class DiscourseBert(nn.Module):
-    def __init__(self):
+    def __init__(self, class_nums=0):
         super(DiscourseBert, self).__init__()
         self.backbone = AutoModel.from_pretrained(config.backbone)
         # ------------------------ # 
@@ -412,12 +412,13 @@ class DiscourseBert(nn.Module):
                 nn.Linear(output_dim, 4),
             )
 
-            # self.classifier = nn.Sequential(
-            #     nn.Linear(2*output_dim, output_dim),
-            #     nn.Dropout(),
-            #     nn.ReLU(),
-            #     nn.Linear(output_dim, 4),
-            # )
+        elif config.modelingMethod == "prompt_93":
+            self.classifier = nn.Sequential(
+                nn.Linear(output_dim, 1024),
+                nn.Dropout(),
+                nn.ReLU(),
+                nn.Linear(1024, class_nums),
+            )
     def forward(self, arg):
         # ------------------------ #
         # 输入骨干网络进行特征提取
@@ -453,6 +454,7 @@ class DiscourseBert(nn.Module):
         if config.modelingMethod == "classification":
             out = torch.mean(res.last_hidden_state, dim=1)
             out = self.classifier(out)
+            
         elif config.modelingMethod == "prompt":
             # 首先预测连接词，取出连接词位置的特征向量
             tmp_out = res.last_hidden_state[:, config.max_length, :]
@@ -462,6 +464,11 @@ class DiscourseBert(nn.Module):
             for i, key in enumerate(self.connLabelMapping.keys()):
                 for j, value in enumerate(self.connLabelMapping[key]):
                     out[:, j] += tmp_out[:, i] * value
+
+        elif config.modelingMethod == "prompt_93":
+            out = torch.mean(res.last_hidden_state, dim=1)
+            out = self.classifier(out)
+
         elif config.modelingMethod == "interaction":
             arg1_self_attned_feats = torch.mean(arg1_self_attned_feats, dim=1)
             arg2_self_attned_feats = torch.mean(arg2_self_attned_feats, dim=1)

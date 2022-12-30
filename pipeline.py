@@ -15,7 +15,10 @@ def train():
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=config.batch_size, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=config.batch_size, shuffle=True)
 
-    model = DiscourseBert()
+    if config.modelingMethod == "prompt_93":
+        model = DiscourseBert(len(train_dataset.conns))
+    else:
+        model = DiscourseBert()
     model.to(config.device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
