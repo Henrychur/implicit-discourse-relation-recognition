@@ -1,0 +1,18 @@
+[    
+    {
+        "label": "0",
+        "label_desc": "comp"
+    },
+    {
+        "label": "1",
+        "label_desc": "cont"
+    },
+    {
+        "label": "2",
+        "label_desc": "exp"
+    },
+    {
+        "label": "3",
+        "label_desc": "temp"
+    }
+]
